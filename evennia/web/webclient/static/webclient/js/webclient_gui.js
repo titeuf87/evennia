@@ -264,7 +264,7 @@ function onText(args, kwargs) {
         var mwin = $("#messagewindow");
         var cls = kwargs == null ? 'out' : kwargs['cls'];
         mwin.append("<div class='" + cls + "'>" + args[0] + "</div>");
-        mwin.animate({
+        mwin.parent().animate({
             scrollTop: document.getElementById("messagewindow").scrollHeight
         }, 0);
         onNewLine(args[0], null);
