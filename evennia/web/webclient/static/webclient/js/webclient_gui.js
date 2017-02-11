@@ -241,6 +241,7 @@ var resizeInputField = function () {
 
 // Handle resizing of client
 function doWindowResize() {
+    return;
     var formh = $('#inputform').outerHeight(true);
     var message_scrollh = $("#messagewindow").prop("scrollHeight");
     $("#messagewindow")
@@ -266,7 +267,6 @@ function onText(args, kwargs) {
         mwin.animate({
             scrollTop: document.getElementById("messagewindow").scrollHeight
         }, 0);
-
         onNewLine(args[0], null);
     } else {
         openPopup(renderto, args[0]);
@@ -420,6 +420,16 @@ function doStartDragDialog(event) {
     $(document).bind("mouseup", undrag);
 }
 
+
+// Splits a pane into two new ones
+function splitPane(parentPane, direction) {
+        var orightml = parentPane.html();
+        var cls = direction + "pane";
+        var spithtml = $("<div class='" + cls + "'></div><div class='" + cls + "'><button class='splitpanehorbutton'>h</button><button class='splitpaneverbutton'>v</button></div>");
+        parentPane.html(spithtml);
+        $(spithtml[0]).html(orightml);
+        Split([spithtml[0], spithtml[1]], {direction: direction});
+}
 //
 // Register Events
 //
@@ -495,7 +505,17 @@ $(document).ready(function() {
     60000*3
     );
 
+    Split(["#panes", "#inputform"], {direction: "vertical", sizes: [90, 10]});
 
+    $("#panes").on("click", ".splitpanehorbutton", function() {
+        var pane = $(this).parent();
+        splitPane(pane, "horizontal");
+    });
+
+    $("#panes").on("click", ".splitpaneverbutton", function() {
+        var pane = $(this).parent();
+        splitPane(pane, "vertical");
+    });
 });
 
 })();

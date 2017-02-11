@@ -80,23 +80,23 @@ div {margin:0px;}
     height: 100%
 }
 
+#panes {
+    height: 100%;
+    width: 100%;
+    overflow: auto;
+}
+
 /* Main scrolling message area */
 #messagewindow {
-    position: absolute;
-    overflow: auto;
     padding: 1em;
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 70px;
+    height: 100%;
 }
 
 /* Input area containing input field and button */
 #inputform {
-    position: absolute;
     width: 100%;
     padding: 0;
     bottom: 0;
@@ -111,7 +111,7 @@ div {margin:0px;}
 }
 
 /* Input field */
-#inputfield, #inputsend, #inputsizer {
+#inputfield, #inputsend {
     display: block;
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
@@ -124,8 +124,8 @@ div {margin:0px;}
     font-family: 'DejaVu Sans Mono', Consolas, Inconsolata, 'Lucida Console', monospace;
 }
 
-#inputfield, #inputsizer {
-    float: left;
+#inputfield {
+    height: 100%;
     width: 95%;
     border: 0;
     resize: none;
@@ -136,9 +136,6 @@ div {margin:0px;}
     outline: 0;
 }
 
-#inputsizer {
-    margin-left: -9999px;
-}
 
 /* Input 'send' button */
 #inputsend {
@@ -245,6 +242,36 @@ div {margin:0px;}
     color: black;
     text-decoration: none;
     cursor: pointer;
+}
+
+.horizontalpane {
+    float: left;
+    height: 100%;
+    width: 100%;
+}
+
+.verticalpane {
+    overflow: auto;
+    position: relative;
+}
+
+.gutter {
+    background-color: #eee;
+    height: 100%;
+
+    background-repeat: no-repeat;
+    background-position: 50%;
+}
+
+.gutter.gutter-vertical {
+    background-image:  url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAFAQMAAABo7865AAAABlBMVEVHcEzMzMzyAv2sAAAAAXRSTlMAQObYZgAAABBJREFUeF5jOAMEEAIEEFwAn3kMwcB6I2AAAAAASUVORK5CYII=");
+    cursor: ns-resize;
+}
+
+.gutter.gutter-horizontal {
+    background-image:  url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAeCAYAAADkftS9AAAAIklEQVQoU2M4c+bMfxAGAgYYmwGrIIiDjrELjpo5aiZeMwF+yNnOs5KSvgAAAABJRU5ErkJggg==");
+    cursor: ew-resize;
+    float: left;
 }
 
 /* XTERM256 colors */
