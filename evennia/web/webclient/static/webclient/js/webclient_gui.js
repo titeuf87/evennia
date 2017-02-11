@@ -293,17 +293,27 @@ function onLoggedIn() {
 }
 
 // Called when a setting changed
+var panessetup = false;
+
 function onGotOptions(args, kwargs) {
     options = kwargs;
 
     $.each(kwargs, function(key, value) {
-        var elem = $("[data-setting='" + key + "']");
-        if (elem.length === 0) {
-            console.log("Could not find option: " + key);
+        if (key === "clientpanes") {
+            if (!panessetup) {
+                loadPanes(value);
+            }
         } else {
-            elem.prop('checked', value);
-        };
+            var elem = $("[data-setting='" + key + "']");
+            if (elem.length === 0) {
+                console.log("Could not find option: " + key);
+            } else {
+                elem.prop('checked', value);
+            };
+        }
     });
+
+    panessetup = true;
 }
 
 // Called when the user changed a setting from the interface
@@ -421,15 +431,128 @@ function doStartDragDialog(event) {
 }
 
 
-// Splits a pane into two new ones
-function splitPane(parentPane, direction) {
-        var orightml = parentPane.html();
-        var cls = direction + "pane";
-        var spithtml = $("<div class='" + cls + "'></div><div class='" + cls + "'><button class='splitpanehorbutton'>h</button><button class='splitpaneverbutton'>v</button></div>");
-        parentPane.html(spithtml);
-        $(spithtml[0]).html(orightml);
-        Split([spithtml[0], spithtml[1]], {direction: direction});
+
+// Splits a number of panes using a certain direction and sizes
+function createSplit(panes, direction, sizes) {
+    var split = Split(panes, {
+        direction: direction,
+        onDragEnd: function() {
+            var sizes = split.getSizes();
+            $(panes[0]).attr("data-size", sizes[0]);
+            $(panes[1]).attr("data-size", sizes[1]);
+            savePanesToServer();
+        },
+        sizes: sizes
+    });
 }
+
+
+// Creates a new split from parentpane
+function splitPane(parentpane, direction) {
+        var orightml = parentpane.html();
+        var cls = direction + "pane";
+        var splithtml = $("<div class='" + cls + "' data-size='50'></div>" +
+                          "<div class='" + cls + "' data-size='50'><button class='splitpanehorbutton'>h</button><button class='splitpaneverbutton'>v</button></div>");
+        parentpane.html(splithtml);
+        
+        createSplit([splithtml[0], splithtml[1]], direction, [50, 50]);
+        
+        var name = parentpane.attr("data-name");
+        parentpane.removeAttr("data-name");
+        $(splithtml[0]).attr("data-name", name);
+        $(splithtml[1]).attr("data-name", name + "2");
+        $(splithtml[0]).html(orightml);
+        
+        savePanesToServer();
+}
+
+
+// Returns a json string of the panes layout
+function getPanes() {
+    var getPanesFromParent = function(parent) {
+        var name = $(parent).attr("data-name");
+        var size = $(parent).attr("data-size");
+        if (name === undefined) {
+            // This pane does not have a name. So that means it is a parent to
+            // two subpanes
+            var children = $(parent).children(".horizontalpane");
+            var direction = "horizontal";
+            
+            if (children.length == 0) {
+                children = $(parent).children(".verticalpane");
+                direction = "vertical";
+            }
+            var pane1 = getPanesFromParent(children[0]);
+            var pane2 = getPanesFromParent(children[1]);
+            
+            return {direction: direction, size: size, panes: [pane1, pane2]}
+        } else {
+            // This is an output pane
+            return {name: name, size: size};
+        };
+    }
+
+    var toppane = $("#panes");
+    var children = toppane.children(".horizontalpane")[0];
+    
+    var panes = JSON.stringify(getPanesFromParent(children));
+    return panes;
+}
+
+function savePanesToServer() {
+    var panesstr = getPanes();
+
+    var changedoptions = {};
+    changedoptions["clientpanes"] = panesstr;
+    Evennia.msg("webclient_options", [], changedoptions);
+}
+
+// Sets up the panes according to a json string as returned by getPanes()
+function loadPanes(panes) {
+    var createpanes = function(parentdiv, panes) {
+        if ("direction" in panes) {
+            // This is a parent pane that contains two subpanes
+            
+            var direction = panes["direction"];
+            var cls = direction + "pane";
+            var size = panes["size"];
+            
+            var pane1 = panes["panes"][0];
+            var pane2 = panes["panes"][1];
+            
+            var splithtml = $("<div class='" + cls + "' data-size='" + pane1["size"] + "'></div>" +
+                              "<div class='" + cls + "' data-size='" + pane2["size"] + "'></div>");
+
+            parentdiv.append(splithtml);
+            createSplit([splithtml[0], splithtml[1]], direction, [parseFloat(pane1["size"]), parseFloat(pane2["size"])]);
+            createpanes($(splithtml[0]), pane1);
+            createpanes($(splithtml[1]), pane2);
+
+        } else {
+            //This is an output pane.
+            
+            var name = panes["name"];
+            parentdiv.attr("data-name", name);
+            
+            //Moves content of a pane with that same name to the newly created one
+            //if it exits
+            $("div[data-name='"+name+"'").detach().appendTo(parentdiv);
+            
+            //If no such pane exists, then this is a new pane: add the split buttons.
+            if (parentdiv.is(':empty')) {
+                parentdiv.append("<button class='splitpanehorbutton'>h</button><button class='splitpaneverbutton'>v</button>");
+            };
+        }
+    }
+
+    var panes = JSON.parse(panes);
+    var div = $("<div class='horizontalpane'></div>");
+    createpanes(div, panes);
+    
+
+    $("#panes").html(div);
+}
+
 //
 // Register Events
 //
@@ -516,6 +639,7 @@ $(document).ready(function() {
         var pane = $(this).parent();
         splitPane(pane, "vertical");
     });
+
 });
 
 })();
