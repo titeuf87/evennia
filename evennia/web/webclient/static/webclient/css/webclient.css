@@ -86,7 +86,7 @@ div {margin:0px;}
 }
 
 /* Main scrolling message area */
-#messagewindow {
+.messagewindow {
     padding: 1em;
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
