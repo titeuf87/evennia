@@ -449,6 +449,16 @@ function createSplit(panes, direction, sizes) {
 
 // Creates a new split from parentpane
 function splitPane(parentpane, direction) {
+        var getNewUniqueName = function(originalname) {
+            var i = 1;
+            var name = originalname + i.toString();
+            while ($("div[data-name='"+name+"'").length) {
+                i += 1;
+                name = originalname + i.toString();
+            };
+            return name;
+        };
+
         var orightml = parentpane.html();
         var cls = direction + "pane";
         var splithtml = $("<div class='" + cls + "' data-size='50'></div>" +
@@ -460,7 +470,7 @@ function splitPane(parentpane, direction) {
         var name = parentpane.attr("data-name");
         parentpane.removeAttr("data-name");
         $(splithtml[0]).attr("data-name", name);
-        $(splithtml[1]).attr("data-name", name + "2");
+        $(splithtml[1]).attr("data-name", getNewUniqueName(name));
         $(splithtml[0]).html(orightml);
         
         savePanesToServer();
