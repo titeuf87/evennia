@@ -536,7 +536,7 @@ function loadPanes(panes) {
             
             //Moves content of a pane with that same name to the newly created one
             //if it exits
-            $("div[data-name='"+name+"'").detach().appendTo(parentdiv);
+            $("div[data-name='"+name+"'").detach().appendTo(parentdiv).removeAttr("data-name");
             
             //If no such pane exists, then this is a new pane: add the split buttons.
             if (parentdiv.is(':empty')) {
