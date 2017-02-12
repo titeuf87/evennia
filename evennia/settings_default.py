@@ -653,6 +653,8 @@ WEBCLIENT_OPTIONS = {
         "notification_sound": False # Plays a sound for notifications of new
                                     # messages
     }
+# The default output panes handled by the webclient
+WEBCLIENT_PANES = ["inventory", "help", "look"]
 
 # We setup the location of the website template as well as the admin site.
 TEMPLATES = [{

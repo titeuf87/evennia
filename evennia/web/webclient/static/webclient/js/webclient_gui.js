@@ -647,6 +647,8 @@ $(document).ready(function() {
 
     Split(["#panes", "#inputform"], {direction: "vertical", sizes: [90, 10]});
 
+    var mwin = $("div[data-name='mainpane'").prepend($("#dropdowntemplate").html());
+
     $("#panes").on("click", ".splitpanehorbutton", function() {
         var pane = $(this).closest(".horizontalpane, .verticalpane");
         setTimeout(function() {

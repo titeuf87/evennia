@@ -7,6 +7,7 @@ page and serve it eventual static content.
 from __future__ import print_function
 from django.shortcuts import render
 from django.contrib.auth import login, authenticate
+from django.conf import settings
 
 from evennia.players.models import PlayerDB
 from evennia.utils import logger
@@ -49,6 +50,7 @@ def webclient(request):
     _shared_login(request)
 
     # make sure to store the browser session's hash so the webclient can get to it!
-    pagevars = {'browser_sessid': request.session.session_key}
+    pagevars = {'browser_sessid': request.session.session_key,
+                'panes': settings.WEBCLIENT_PANES}
 
     return render(request, 'webclient.html', pagevars)
