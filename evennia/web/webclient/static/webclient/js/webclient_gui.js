@@ -452,7 +452,7 @@ function splitPane(parentpane, direction) {
         var orightml = parentpane.html();
         var cls = direction + "pane";
         var splithtml = $("<div class='" + cls + "' data-size='50'></div>" +
-                          "<div class='" + cls + "' data-size='50'><button class='splitpanehorbutton'>h</button><button class='splitpaneverbutton'>v</button></div>");
+                          "<div class='" + cls + "' data-size='50'>" + $("#dropdowntemplate").html() + "</div>");
         parentpane.html(splithtml);
         
         createSplit([splithtml[0], splithtml[1]], direction, [50, 50]);
@@ -504,6 +504,7 @@ function savePanesToServer() {
 
     var changedoptions = {};
     changedoptions["clientpanes"] = panesstr;
+    console.log(panesstr);
     Evennia.msg("webclient_options", [], changedoptions);
 }
 
@@ -540,7 +541,7 @@ function loadPanes(panes) {
             
             //If no such pane exists, then this is a new pane: add the split buttons.
             if (parentdiv.is(':empty')) {
-                parentdiv.append("<button class='splitpanehorbutton'>h</button><button class='splitpaneverbutton'>v</button>");
+                parentdiv.append($("#dropdowntemplate").html());
             };
         }
     }
@@ -631,13 +632,27 @@ $(document).ready(function() {
     Split(["#panes", "#inputform"], {direction: "vertical", sizes: [90, 10]});
 
     $("#panes").on("click", ".splitpanehorbutton", function() {
-        var pane = $(this).parent();
-        splitPane(pane, "horizontal");
+        var pane = $(this).closest(".horizontalpane, .verticalpane");
+        setTimeout(function() {
+            splitPane(pane, "horizontal");
+        }, 1);
     });
 
     $("#panes").on("click", ".splitpaneverbutton", function() {
-        var pane = $(this).parent();
-        splitPane(pane, "vertical");
+        var pane = $(this).closest(".horizontalpane, .verticalpane");
+        setTimeout(function() {
+            splitPane(pane, "vertical");
+        }, 1);
+    });
+
+    $("#panes").on("click", ".dropdownbutton", function(event) {
+        var dropdown = $(this).parent().find(".dropdowncontent");
+        dropdown.show();
+        event.stopPropagation();
+
+        $(document).not($(this).parent()).one("click", function(event) {
+            dropdown.hide();
+        });
     });
 
 });

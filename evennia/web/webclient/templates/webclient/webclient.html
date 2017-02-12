@@ -15,8 +15,13 @@
     </div>
     <div id="panes">
         <div class="horizontalpane" data-name="mainpane">
-            <button class="splitpanehorbutton">h</button>
-            <button class="splitpaneverbutton">v</button>
+            <div class="dropdown">
+                <button class="dropdownbutton">&#9660;</button>
+                <div class="dropdowncontent">
+                    <a class="splitpaneverbutton" href="#">split vertical</a>
+                    <a class="splitpanehorbutton" href="#">split horizontal</a>
+                </div>
+            </div>
             <div id="messagewindow" role="log"></div>
         </div>
     </div>
@@ -53,5 +58,13 @@
     </div>
 </div>
 
+<div id="dropdowntemplate" style="display: none;">
+    <div class="dropdown">
+        <button class="dropdownbutton">&#9660;</button>
+        <div class="dropdowncontent">
+            <a class="splitpaneverbutton" href="#">split vertical</a>
+            <a class="splitpanehorbutton" href="#">split horizontal</a>
+        </div>
+    </div>
+</div>
 {% endblock %}
-
